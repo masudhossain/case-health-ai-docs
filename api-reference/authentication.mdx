@@ -1,0 +1,32 @@
+---
+title: Authentication
+---
+
+# 🔐 Authentication
+
+Case Health AI (CHAI) uses **API keys** to authenticate requests. Once you have signed a BAA and agreement too partner with us, we will provide you with a workspace. Inside the workspace you will find your keys inside your Developer Settings > API Keys. 
+
+We do not support public signups or self-service API key generation.
+
+To access the API:
+
+- Book a demo with our sales engineering team
+- We'll provision your organization-specific credentials
+
+👉 [Book a demo](https://calendly.com/fadi-casehealth)
+
+After your demo, we’ll provide:
+- Your **API key**
+- A **sandbox base URL**
+- Access to optional plugins like Compendiums and CMS policies
+
+---
+
+## 🧾 How to Authenticate
+
+All requests must include your API key in the `X-API-KEY` header. All requests must be made in HTTPS. Using your X-API-KEY we will find your workspace and authenticate your request.
+
+### 🔑 Header format
+
+```http
+X-API-KEY: YOUR_API_KEY

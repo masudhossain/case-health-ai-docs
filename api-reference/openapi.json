@@ -19,7 +19,7 @@
     }
   ],
   "paths": {
-    "/prior-auths": {
+    "/prior_auths": {
       "get": {
         "description": "Returns all prior authorizations from the system that the user has access to",
         "parameters": [
@@ -79,9 +79,9 @@
         }
       },
       "post": {
-        "description": "Creates a new prior authorization",
+        "description": "Creates a new prior authorization with optional FHIR clinical data. The fhir_bundle can contain Patient, Practitioner, and MedicationRequest objects following FHIR standards.",
         "requestBody": {
-          "description": "Prior authorization to create",
+          "description": "Prior authorization data with optional FHIR clinical information",
           "content": {
             "application/json": {
               "schema": {
@@ -103,7 +103,7 @@
             }
           },
           "400": {
-            "description": "Bad request - Invalid data provided",
+            "description": "Bad request - Invalid data provided or FHIR Bundle validation failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -124,6 +124,298 @@
           }
         }
       }
+    },
+    "/prior_auths/{prior_auth_id}/run_agents": {
+      "post": {
+        "description": "Triggers the execution of AI agents for a specific prior authorization",
+        "parameters": [
+          {
+            "name": "prior_auth_id",
+            "in": "path",
+            "description": "Unique identifier of the prior authorization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Agents started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentRunResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid prior authorization ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prior authorization not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prior_auths/{prior_auth_id}/medication_requests": {
+      "get": {
+        "description": "Returns medication requests for a specific prior authorization",
+        "parameters": [
+          {
+            "name": "prior_auth_id",
+            "in": "path",
+            "description": "Unique identifier of the prior authorization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medication requests found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FHIRMedicationRequest" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid prior authorization ID",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Prior authorization not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Triggers a rerun of medication request retrieval for a specific prior authorization",
+        "parameters": [
+          {
+            "name": "prior_auth_id",
+            "in": "path",
+            "description": "Unique identifier of the prior authorization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Medication request rerun started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Status of the rerun operation"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable message about the rerun operation"
+                    }
+                  },
+                  "required": ["status", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid prior authorization ID",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Prior authorization not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }, 
+    "/prior_auths/{prior_auth_id}/diagnoses": {
+      "get": {
+        "description": "Returns diagnoses for a specific prior authorization",
+        "parameters": [
+          {
+            "name": "prior_auth_id",
+            "in": "path",
+            "description": "Unique identifier of the prior authorization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diagnoses found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FHIRDiagnosis" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid prior authorization ID",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Prior authorization not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }, 
+      "post": {
+        "description": "Creates one or more diagnoses for a specific prior authorization",
+        "parameters": [
+          {
+            "name": "prior_auth_id",
+            "in": "path",
+            "description": "Unique identifier of the prior authorization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/FHIRDiagnosis" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Diagnoses successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FHIRDiagnosis" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Prior authorization not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -131,8 +423,9 @@
       "PriorAuth": {
         "required": [
           "id",
-          "patient_id",
-          "service_type",
+          "case_id",
+          "submitted_by",
+          "workflow_stage",
           "status",
           "created_at"
         ],
@@ -143,37 +436,27 @@
             "type": "string",
             "format": "uuid"
           },
-          "patient_id": {
-            "description": "Patient identifier",
+          "case_id": {
+            "description": "Unique ID from the UM platform (used for tracking + linking)",
             "type": "string"
           },
-          "service_type": {
-            "description": "Type of service requiring authorization",
+          "submitted_by": {
+            "description": "The platform or system submitting the request (for audit, routing)",
             "type": "string"
+          },
+          "workflow_stage": {
+            "description": "Indicates where this case sits in the UM lifecycle",
+            "type": "string",
+            "enum": ["initial", "resubmission", "appeal"]
+          },
+          "fhir_bundle": {
+            "description": "JSON FHIR Bundle containing clinical data",
+            "$ref": "#/components/schemas/FHIRBundle"
           },
           "status": {
             "description": "Current status of the prior authorization",
             "type": "string",
             "enum": ["pending", "approved", "denied", "in_review"]
-          },
-          "description": {
-            "description": "Description of the service or procedure",
-            "type": "string"
-          },
-          "requested_date": {
-            "description": "Date when the authorization was requested",
-            "type": "string",
-            "format": "date"
-          },
-          "approved_date": {
-            "description": "Date when the authorization was approved",
-            "type": "string",
-            "format": "date"
-          },
-          "denied_date": {
-            "description": "Date when the authorization was denied",
-            "type": "string",
-            "format": "date"
           },
           "created_at": {
             "description": "Timestamp when the record was created",
@@ -189,25 +472,231 @@
       },
       "NewPriorAuth": {
         "required": [
-          "patient_id",
-          "service_type"
+          "case_id",
+          "workflow_stage"
         ],
         "type": "object",
         "properties": {
-          "patient_id": {
-            "description": "Patient identifier",
+          "case_id": {
+            "description": "Unique ID from the UM platform (used for tracking + linking)",
             "type": "string"
           },
-          "service_type": {
-            "description": "Type of service requiring authorization",
+          "workflow_stage": {
+            "description": "Indicates where this case sits in the UM lifecycle",
+            "type": "string",
+            "enum": ["initial", "resubmission", "appeal"]
+          },
+          "fhir_bundle": {
+            "description": "Optional: FHIR clinical data containing Patient, Practitioner, and MedicationRequest information",
+            "$ref": "#/components/schemas/FHIRBundle"
+          },
+          "files": {
+            "description": "Optional: Array of PDF file objects",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL link to a PDF file"
+                }
+              },
+              "required": ["file_url"]
+            }
+          }
+        }
+      },
+      "FHIRBundle": {
+        "type": "object",
+        "properties": {
+          "patient": {
+            "description": "Optional: FHIR Patient resource",
+            "$ref": "#/components/schemas/FHIRPatient"
+          },
+          "practitioner": {
+            "description": "Optional: FHIR Practitioner resource",
+            "$ref": "#/components/schemas/FHIRPractitioner"
+          },
+          "medication_request": {
+            "description": "Optional: FHIR MedicationRequest resource",
+            "$ref": "#/components/schemas/FHIRMedicationRequest"
+          }
+        }
+      },
+      "FHIRPatient": {
+        "required": [
+          "resourceType"
+        ],
+        "type": "object",
+        "properties": {
+          "resourceType": {
+            "description": "Must be 'Patient'",
+            "type": "string",
+            "enum": ["Patient"]
+          },
+          "id": {
+            "description": "Unique identifier for the patient",
             "type": "string"
           },
-          "description": {
-            "description": "Description of the service or procedure",
+          "name": {
+            "description": "Patient's name",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "family": {
+                  "type": "string"
+                },
+                "given": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "gender": {
+            "description": "Patient's gender",
+            "type": "string",
+            "enum": ["male", "female", "other", "unknown"]
+          },
+          "birthDate": {
+            "description": "Patient's date of birth",
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "FHIRPractitioner": {
+        "required": [
+          "resourceType"
+        ],
+        "type": "object",
+        "properties": {
+          "resourceType": {
+            "description": "Must be 'Practitioner'",
+            "type": "string",
+            "enum": ["Practitioner"]
+          },
+          "id": {
+            "description": "Unique identifier for the practitioner",
             "type": "string"
           },
-          "requested_date": {
-            "description": "Date when the authorization was requested",
+          "name": {
+            "description": "Practitioner's name",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "family": {
+                  "type": "string"
+                },
+                "given": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "identifier": {
+            "description": "Practitioner identifiers (e.g., NPI)",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "system": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "FHIRMedicationRequest": {
+        "required": [
+          "resourceType"
+        ],
+        "type": "object",
+        "properties": {
+          "resourceType": {
+            "description": "Must be 'MedicationRequest'",
+            "type": "string",
+            "enum": ["MedicationRequest"]
+          },
+          "id": {
+            "description": "Unique identifier for the medication request",
+            "type": "string"
+          },
+          "subject": {
+            "description": "Reference to the patient",
+            "type": "object",
+            "properties": {
+              "reference": {
+                "type": "string"
+              }
+            }
+          },
+          "medicationCodeableConcept": {
+            "description": "Medication information",
+            "type": "object",
+            "properties": {
+              "coding": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "system": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "display": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "dosageInstruction": {
+            "description": "Dosage instructions",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "dispenseRequest": {
+            "description": "Dispense request details",
+            "type": "object",
+            "properties": {
+              "quantity": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "number"
+                  },
+                  "unit": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "authoredOn": {
+            "description": "Date when the request was authored",
             "type": "string",
             "format": "date"
           }
@@ -226,6 +715,42 @@
           },
           "message": {
             "type": "string"
+          }
+        }
+      },
+      "AgentRunResponse": {
+        "required": [
+          "prior_auth_id",
+          "status",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "prior_auth_id": {
+            "description": "Unique identifier of the prior authorization",
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "description": "Status of the agent execution",
+            "type": "string",
+            "enum": ["started", "queued", "processing"]
+          },
+          "message": {
+            "description": "Human-readable message about the agent execution",
+            "type": "string"
+          },
+          "agent_ids": {
+            "description": "Array of agent identifiers that were started",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "estimated_completion_time": {
+            "description": "Estimated time when the agents will complete processing",
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

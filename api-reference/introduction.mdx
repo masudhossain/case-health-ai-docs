@@ -1,33 +1,49 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: Introduction
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+# 👋 Welcome to Case Health AI
 
-## Welcome
+Case Health AI (CHAI) is an API-first platform designed to power modern prior authorization workflows with intelligent automation.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+We partner with health plans and utilization management (UM) platforms to streamline the clinical decision-making process using modular AI agents that can handle intake, eligibility checks, policy validation, and real-time decisioning.
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+---
 
-## Authentication
+## 🌐 Base URL
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All API requests are made to the following base URL:
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+```bash
+https://app.casehealth.ai/api/v1
 ```
+
+---
+
+## 🛠 Need Help?
+
+For engineering support or technical questions:  
+📧 **mas@casehealth.ai**
+
+To schedule a live demo and receive your API key:  
+📅 [Book with our team →](https://calendly.com/mas-casehealth)
+
+---
+
+## 🔒 Security & Compliance
+
+CHAI is built for enterprise-grade security and full compliance with healthcare regulations.
+
+We support:
+
+- HIPAA-compliant infrastructure
+- Encrypted data at rest and in transit
+- Role-based access controls (RBAC)
+- Full audit logs for every decision
+- Isolated environments and per-org API keys
+
+We are actively pursuing **SOC 2 Type II** and **HITRUST** certification.
+
+---
+
+If you're ready to start, check out the [Authentication](/authentication) page to get your API key and begin integrating.

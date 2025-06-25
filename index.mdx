@@ -1,49 +1,76 @@
 ---
 title: "Introduction"
-description: "Welcome to the CHAI documentation"
+description: "Welcome to the Case Health AI (CHAI) API documentation"
 ---
 
 <img
   className="block dark:hidden"
-  src="/chai-mintlify-banner.png"
-  alt="Hero Light"
-  title=""
+  src="/chai-banner.png"
+  alt="CHAI Hero Banner"
+  style={{ borderRadius: '5px' }}
 />
 
 <img
   className="hidden dark:block"
-  src="/images/hero-dark.png"
-  alt="Hero Dark"
+  src="/chai-banner.png"
+  alt="CHAI Hero Dark"
+  style={{ borderRadius: '5px' }}
 />
 
-## Setting up
+# 👋 Welcome to the CHAI API
 
-The first step to world-class documentation is setting up your editing environments.
+**Case Health AI (CHAI)** is a modern API platform built to automate prior authorization workflows using modular AI agents. We integrate directly into utilization management (UM) systems like MHK to streamline intake, eligibility validation, policy enforcement, and AI-powered decisions.
+
+This documentation will guide you through authenticating, submitting prior auths, and leveraging AI agents and plugins such as Compendiums and CMS guidelines.
+
+---
+
+## ⚡ Quick Start
 
 <CardGroup cols={2}>
-  <Card title="Edit Your Docs" icon="pen-to-square" href="https://mintlify.com/docs/quickstart">
-    Get your docs set up locally for easy development
+  <Card title="Schedule a demo" icon="paper-plane" href="https://calendly.com/mas-casehealth">
+    Schedule a demo to learn how to submit a FHIR-based prior authorization to kick off the AI workflow.
   </Card>
-  <Card title="Preview Changes" icon="image" href="https://mintlify.com/docs/development">
-    Preview your changes before you push to make sure they're perfect
+
+  <Card title="Get an API Key" icon="key" href="/api-reference/authentication">
+    Book a short onboarding session to receive your secure API key and environment access.
   </Card>
 </CardGroup>
 
-## Make it yours
+---
 
-Update your docs to your brand and add valuable content for the best user conversion.
+## 🔌 Add AI Decision Support
+
+CHAI offers modular AI agents and plugin options:
 
 <CardGroup cols={2}>
-  <Card title="Customize Style" icon="palette" href="https://mintlify.com/docs/settings/global">
-    Customize your docs to your company's colors and brands
+  <Card title="Run the Decision Agent" icon="bolt" href="/api-reference/endpoint/run_agents">
+    Get real-time approval or denial decisions, with full reasoning and citations.
   </Card>
-  <Card title="Reference APIs" icon="code" href="https://mintlify.com/docs/api-playground/openapi">
-    Automatically generate endpoints from an OpenAPI spec
+  <Card title="Run Diagnoses" icon="book-medical" href="/api-reference/endpoint/diagnoses/get">
+    Extract diagnoses from the prior authorization for the AI Agent to run a validation.
   </Card>
-  <Card title="Add Components" icon="screwdriver-wrench" href="https://mintlify.com/docs/content/components/accordions">
-    Build interactive features and designs to guide your users
+  <Card title="Run Medication Requests" icon="shield-halved" href="/api-reference/endpoint/medication_requests/get">
+    Extract medication requests from the prior authorization for the AI Agent to run a validation.
   </Card>
-  <Card title="Get Inspiration" icon="stars" href="https://mintlify.com/customers">
-    Check out our showcase of our favorite documentation
+  <Card title="Run AI Decisions" icon="magnifying-glass" href="/api-reference/endpoint/ai_decisions/get">
+    View every agent’s output and how final decisions were derived.
   </Card>
 </CardGroup>
+
+---
+
+## 🔐 Security + Compliance
+
+CHAI is built with full enterprise security from day one:
+
+- HIPAA-compliant architecture
+- Encrypted data at rest and in transit
+- Role-based access and audit trails
+- Environment-isolated API keys
+
+We're actively pursuing SOC 2 and HITRUST certifications.
+
+---
+
+Need help integrating? [Book a session with our engineers](https://calendly.com/mas-casehealth) or reach out at **mas@casehealth.ai**.
