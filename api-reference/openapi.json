@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "CaseHealth API",
+    "description": "API for managing prior authorizations",
     "license": {
       "name": "MIT"
     },
@@ -10,18 +10,18 @@
   },
   "servers": [
     {
-      "url": "http://app.casehealth.ai"
+      "url": "https://app.casehealth.ai/api/v1"
     }
   ],
   "security": [
     {
-      "bearerAuth": []
+      "apiKeyAuth": []
     }
   ],
   "paths": {
-    "/plants": {
+    "/prior-auths": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "description": "Returns all prior authorizations from the system that the user has access to",
         "parameters": [
           {
             "name": "limit",
@@ -31,17 +31,26 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of results to skip",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Prior authorization response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Plant"
+                    "$ref": "#/components/schemas/PriorAuth"
                   }
                 }
               }
@@ -56,35 +65,45 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "post": {
-        "description": "Creates a new plant in the store",
+        "description": "Creates a new prior authorization",
         "requestBody": {
-          "description": "Plant to add to the store",
+          "description": "Prior authorization to create",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/NewPriorAuth"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "plant response",
+          "201": {
+            "description": "Prior authorization created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/PriorAuth"
                 }
               }
             }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Bad request - Invalid data provided",
             "content": {
               "application/json": {
                 "schema": {
@@ -92,32 +111,9 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Unauthorized - Invalid API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -125,28 +121,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
           }
         }
       }
@@ -154,41 +128,90 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
+      "PriorAuth": {
         "required": [
-          "name"
+          "id",
+          "patient_id",
+          "service_type",
+          "status",
+          "created_at"
         ],
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
+          "id": {
+            "description": "Unique identifier for the prior authorization",
+            "type": "string",
+            "format": "uuid"
+          },
+          "patient_id": {
+            "description": "Patient identifier",
             "type": "string"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "service_type": {
+            "description": "Type of service requiring authorization",
             "type": "string"
+          },
+          "status": {
+            "description": "Current status of the prior authorization",
+            "type": "string",
+            "enum": ["pending", "approved", "denied", "in_review"]
+          },
+          "description": {
+            "description": "Description of the service or procedure",
+            "type": "string"
+          },
+          "requested_date": {
+            "description": "Date when the authorization was requested",
+            "type": "string",
+            "format": "date"
+          },
+          "approved_date": {
+            "description": "Date when the authorization was approved",
+            "type": "string",
+            "format": "date"
+          },
+          "denied_date": {
+            "description": "Date when the authorization was denied",
+            "type": "string",
+            "format": "date"
+          },
+          "created_at": {
+            "description": "Timestamp when the record was created",
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "description": "Timestamp when the record was last updated",
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "NewPriorAuth": {
+        "required": [
+          "patient_id",
+          "service_type"
+        ],
+        "type": "object",
+        "properties": {
+          "patient_id": {
+            "description": "Patient identifier",
+            "type": "string"
           },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
+          "service_type": {
+            "description": "Type of service requiring authorization",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of the service or procedure",
+            "type": "string"
+          },
+          "requested_date": {
+            "description": "Date when the authorization was requested",
+            "type": "string",
+            "format": "date"
           }
-        ]
+        }
       },
       "Error": {
         "required": [
@@ -208,9 +231,10 @@
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
       }
     }
   }
